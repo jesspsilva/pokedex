@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="loading">
+        <div class="pokeball">
+            <div class="pokeball-button"></div>
+        </div>
+        <p>A carregar todos os Pokémons</p>
+    </div>
+    <section class="top-container">
+        <h1>Pokédex</h1>
+        <div class="search-bar">
+            <input type="text" class="search-pokemon" placeholder="Search your favorite pokemon by name or id">
+        </div>
+        <div class="type-buttons">
+            <p>Or select the type of pokemon that you are searching for:</p>
+        </div>
+    </section>
+    <section id="poke-container" class="poke-container">
+        <div class="no-pokemon">
+            <p>Pokémon not found</p>
+        </div>
+    </section> 
+    <section id="info-card">
+    </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
