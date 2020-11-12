@@ -1,5 +1,7 @@
 // Number of pokemons
 const pokemonsNumber = 893;
+let pokemonsToShow = 150;
+let pokemonsOnScreen = 1;
 
 // Pokemon background colors
 const colors = {
@@ -29,7 +31,7 @@ const typeColors = {
 	grass: '#9bcc50',
 	electric: '#eed535',
 	water: '#4592c4',
-	ground: '#ab9842',
+	ground: '#ab9522',
 	rock: '#a38c21',
 	fairy: '#FFACE4',
 	poison: '#b97fc9',
@@ -50,6 +52,8 @@ const mainTypes = Object.keys(colors);
 // DOM Elements
 const pokeContainer = document.getElementById('poke-container');
 const pokeInfoCard = document.getElementById('info-card');
+const loadingScreen = document.querySelector('.loading');
+const loadBtn = document.querySelector('.load-button');
 
 
 //Fade in effect - pokemon cards
@@ -67,36 +71,63 @@ function hideElements(){
     });
 }
 
-const loadingScreen = document.querySelector('.loading');
+// Load more Pokémons button
+loadBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    showHiddenPokemons();
+    if(pokemonsToShow < pokemonsNumber){
+        pokemonsOnScreen += 150;
+        pokemonsToShow += 150;
+        loadingScreen.style.display = "flex";
+        fecthAllPokemons(pokemonsToShow, pokemonsOnScreen);
+    }
+});
+
+// Show all pokemons (remove filters)
+const showHiddenPokemons = () => {
+    const pokemons = document.querySelectorAll('.pokemon');
+    noPokemonContainer.classList.remove("show");
+    pokemons.forEach(pokemon => {
+        pokemon.style.display = 'block';
+    });
+}
 
 // Get all pokemons from api
-const fecthAllPokemons = async () => {
-    for(let i = 1; i <= pokemonsNumber; i++){
-        // Get pokemon info from API
-        const url = `//pokeapi.co/api/v2/pokemon/${i}`;
-        const result = await fetch(url);
-        const pokemon = await result.json();
+const fecthAllPokemons = async (pokemonsToShow, pokemonsOnScreen) => {
+    for(let i = pokemonsOnScreen; i <= pokemonsToShow; i++){
+        if(i <= pokemonsNumber){
+            // Get pokemon info from API
+            const url = `//pokeapi.co/api/v2/pokemon/${i}`;
+            const result = await fetch(url);
+            const pokemon = await result.json();
 
-        const pokemonName = pokemon.name[0].toUpperCase() + pokemon.name.slice(1);
-        const pokemonId = pokemon.id;
-        const pokemonTypes = pokemon.types.map( el => el.type.name);
-        const defaultImage = pokemon.sprites.front_default; 
-        createPokemonCard(pokemonName, pokemonId, pokemonTypes, defaultImage);
-        if(i == pokemonsNumber){
-            loadingScreen.style.display = "none";
+            const pokemonName = pokemon.name[0].toUpperCase() + pokemon.name.slice(1);
+            const pokemonId = pokemon.id;
+            const pokemonTypes = pokemon.types.map( el => el.type.name);
+            const defaultImage = pokemon.sprites.front_default; 
+            createPokemonCard(pokemonName, pokemonId, pokemonTypes, defaultImage);
+            if(i == pokemonsToShow){
+                loadingScreen.style.display = "none";
+            }
+        } else {
+            loadBtn.style.display = "none";
         }
     }
     const moreInfoBtns = document.querySelectorAll('.poke-info');
+
     moreInfoBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const pokemonId = e.target.parentNode.parentNode.getAttribute('data-id');
             getPokemonInfo(pokemonId);
+            btn.classList.add('disableClick');
         });
     });
-
-    hideElements();
+/*     hideElements(); */
 }
+
+// Call the function to fetch all pokemons
+fecthAllPokemons(pokemonsToShow, pokemonsOnScreen);
 
 let visiblePokemons = 0;
 
@@ -226,6 +257,15 @@ function pokemonData(pokemon){
     pokemonCardInfo(pokemonName, pokemonId, pokemonTypes, pokemonAbilites, pokemonHeight, pokemonWeight, pokemonMoves, defaultImage);
 }
 
+// Get pokemon info to display on pokemon card
+getPokemonInfo = async (id) =>{
+    // Get pokemon info from API
+    const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
+    const result = await fetch(url);
+    const pokemon = await result.json();
+    pokemonData(pokemon);
+}
+
 // Close button
 function closeBtn() {
     const closeBtn = document.querySelector('.close');
@@ -235,16 +275,13 @@ function closeBtn() {
         pokeInfoCard.style.display = 'none';
         pokeInfoCard.innerHTML = '';
         overlay.style.display = 'none';
-    });
-}
 
-// Get pokemon info to display on pokemon card
-getPokemonInfo = async (id) =>{
-    // Get pokemon info from API
-    const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
-    const result = await fetch(url);
-    const pokemon = await result.json();
-    pokemonData(pokemon);
+        const moreInfoBtns = document.querySelectorAll('.poke-info');
+        moreInfoBtns.forEach(btn => {
+            btn.classList.remove('disableClick');
+        });
+
+    });
 }
 
 // Search bar
@@ -284,11 +321,11 @@ searchInput.addEventListener('keyup', (event) => {
     });
 
     // If there's no pokemons to display show message
-    if (counter == pokemonsNumber) {
-        noPokemonContainer.style.display = 'block';
+    if (counter == pokemonsToShow) {
+        noPokemonContainer.classList.add("show");
         counter = 0;
     } else {
-        noPokemonContainer.style.display = 'none';
+        noPokemonContainer.classList.remove("show");
     }
 });
 
@@ -315,19 +352,27 @@ typeButtons.forEach(button => {
     })
 });
 
+let numberOfHiddenPokemons = 1;
+
 function filterType(buttonVal) {
     const pokemons = document.querySelectorAll('.pokemon');
-
-    pokemons.forEach(pokemon => {
+    pokemons.forEach((pokemon, index, array) => {
         const pokemonType = pokemon.getAttribute('data-type');
         if (buttonVal == pokemonType) {
             pokemon.style.display = 'block';
         } else {
+            // In the last iteration, if all pokemons are hidden, display message
+            if (index === (array.length -1)) {
+                if(numberOfHiddenPokemons === pokemonsToShow){
+                    noPokemonContainer.classList.add("show");
+                } else {
+                    noPokemonContainer.classList.remove("show");
+                }
+                numberOfHiddenPokemons = 0;
+            }
             pokemon.style.display = 'none';
+            numberOfHiddenPokemons++;
         }
     });
 }
-
-// Call the function to fetch all pokemons
-fecthAllPokemons();
 
