@@ -32,6 +32,7 @@ Now just go to <a href="https://jesspsilva.github.io/pokedex/" target="_blank"><
 If you like it, leave a :star: !
 
 <br>
+
 ## :mag: Project Images
 
 <h3 align="center">
