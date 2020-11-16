@@ -1,8 +1,3 @@
-<h3 align="center">
-    <img alt="Pokedex" title="pokedex" src="https://user-images.githubusercontent.com/24191107/99312361-d2dd9400-2855-11eb-8a92-eaa8ee8f2aff.png">
-    <br>
-</h3>
-
 # :red_circle: Pokédex
 
 <p>Who has never played or seen <strong>Pokémon</strong>?
@@ -35,3 +30,10 @@ Now just go to <a href="https://jesspsilva.github.io/pokedex/" target="_blank"><
 ## :heart: Feedback
 
 If you like it, leave a :star: !
+
+## :mag: Project Images
+
+<h3 align="center">
+    <img alt="Pokedex" title="pokedex" src="https://user-images.githubusercontent.com/24191107/99312361-d2dd9400-2855-11eb-8a92-eaa8ee8f2aff.png">
+    <br>
+</h3>
