@@ -1,6 +1,6 @@
 // Number of pokemons
 const pokemonsNumber = 893;
-let pokemonsToShow = 150;
+let pokemonsToShow = 102;
 let pokemonsOnScreen = 1;
 
 // Pokemon background colors
@@ -33,10 +33,10 @@ const typeColors = {
 	water: '#4592c4',
 	ground: '#ab9522',
 	rock: '#a38c21',
-	fairy: '#FFACE4',
+	fairy: '#FF7B9C',
 	poison: '#b97fc9',
 	bug: '#729f3f',
-	dragon: '#53a4cf',
+	dragon: '#033F63',
 	psychic: '#f366b9',
 	flying: '#3dc7ef',
 	fighting: '#d56723',
@@ -55,29 +55,13 @@ const pokeInfoCard = document.getElementById('info-card');
 const loadingScreen = document.querySelector('.loading');
 const loadBtn = document.querySelector('.load-button');
 
-
-//Fade in effect - pokemon cards
-function hideElements(){
-    const callback = function(entries) {
-        entries.forEach(entry => {
-            entry.target.classList.toggle("appear");
-        });
-    };
-
-    const observer = new IntersectionObserver(callback);
-    const targets = document.querySelectorAll(".pokemon");
-    targets.forEach(function(target) {
-        observer.observe(target);
-    });
-}
-
 // Load more Pokémons button
-loadBtn.addEventListener('click', (e) => {
+loadBtn.addEventListener('click', e => {
     e.preventDefault();
     showHiddenPokemons();
     if(pokemonsToShow < pokemonsNumber){
-        pokemonsOnScreen += 150;
-        pokemonsToShow += 150;
+        pokemonsOnScreen += 102;
+        pokemonsToShow += 102;
         loadingScreen.style.display = "flex";
         fecthAllPokemons(pokemonsToShow, pokemonsOnScreen);
     }
@@ -116,14 +100,13 @@ const fecthAllPokemons = async (pokemonsToShow, pokemonsOnScreen) => {
     const moreInfoBtns = document.querySelectorAll('.poke-info');
 
     moreInfoBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', e => {
             e.preventDefault();
             const pokemonId = e.target.parentNode.parentNode.getAttribute('data-id');
             getPokemonInfo(pokemonId);
             btn.classList.add('disableClick');
         });
     });
-/*     hideElements(); */
 }
 
 // Call the function to fetch all pokemons
@@ -146,11 +129,6 @@ function createPokemonCard(pokeName, pokeId, pokeType, defaultImage) {
     pokemonElement.setAttribute("data-type", type);
 
     pokemonElement.style.backgroundColor = color;
-
-    // toggle class to fade in effect
-    if(visiblePokemons >= 18) {
-        pokemonElement.classList.add('fade-in', 'appear');
-    }
 
     const pokeText = `
         <div class='image-container'>
@@ -270,7 +248,7 @@ getPokemonInfo = async (id) =>{
 function closeBtn() {
     const closeBtn = document.querySelector('.close');
 
-    closeBtn.addEventListener('click', (e) => {
+    closeBtn.addEventListener('click', e => {
         e.preventDefault();
         pokeInfoCard.style.display = 'none';
         pokeInfoCard.innerHTML = '';
@@ -288,7 +266,7 @@ function closeBtn() {
 const searchInput = document.querySelector('.search-pokemon');
 const noPokemonContainer = document.querySelector('.no-pokemon');
 
-searchInput.addEventListener('keyup', (event) => {  
+searchInput.addEventListener('keyup', event => {  
     const input = event.target.value;
     const value = input.toLowerCase();
 
@@ -345,7 +323,7 @@ typesOfPokemon.forEach(type => {
 const typeButtons = document.querySelectorAll('.type-button');
 
 typeButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
+    button.addEventListener('click', e => {
         e.preventDefault();
         const buttonValue =  e.target.innerHTML.toLowerCase();
         filterType(buttonValue);
@@ -375,4 +353,26 @@ function filterType(buttonVal) {
         }
     });
 }
+
+// Go to top button
+const goToTopBtn = document.querySelector(".top-button");
+
+// When scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        goToTopBtn.style.display = "block";
+    } else {
+        goToTopBtn.style.display = "none";
+    }
+}
+
+// When click on the button, scroll to the top of the document
+goToTopBtn.addEventListener('click', e => {
+    e.preventDefault();
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+});
+
 
