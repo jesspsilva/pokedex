@@ -1,7 +1,7 @@
 // Number of pokemons
 const pokemonsNumber = 893;
-let pokemonsToShow = 102;
-let pokemonsOnScreen = 1;
+let pokemonsToShow = 101;
+let pokemonsOnScreen = 0;
 
 // Pokemon background colors
 const colors = {
@@ -59,11 +59,10 @@ const loadBtn = document.querySelector('.load-button');
 loadBtn.addEventListener('click', e => {
     e.preventDefault();
     showHiddenPokemons();
-    if(pokemonsToShow < pokemonsNumber){
+    if(pokemonsOnScreen < pokemonsNumber){
         pokemonsOnScreen += 102;
         pokemonsToShow += 102;
-        loadingScreen.style.display = "flex";
-        fecthAllPokemons(pokemonsToShow, pokemonsOnScreen);
+        showPokemon(pokemonInfo, pokemonsToShow, pokemonsOnScreen);
     }
 });
 
@@ -77,18 +76,49 @@ const showHiddenPokemons = () => {
 }
 
 // Get all pokemons from api
-const fecthAllPokemons = async (pokemonsToShow, pokemonsOnScreen) => {
-    for(let i = pokemonsOnScreen; i <= pokemonsToShow; i++){
-        if(i <= pokemonsNumber){
-            // Get pokemon info from API
-            const url = `//pokeapi.co/api/v2/pokemon/${i}`;
-            const result = await fetch(url);
-            const pokemon = await result.json();
+const fetchPokemonsFromAPI = async () => {
+    const url = `//pokeapi.co/api/v2/pokemon/?limit=${pokemonsNumber}`;
+    return fetch(url)
+    .then(response => response.json())
+    .then(function(allpokemon){
+        allpokemon.results.forEach(function(pokemon){
+            fetchPokemonIndividualData(pokemon); 
+        })
+    })
 
-            const pokemonName = pokemon.name[0].toUpperCase() + pokemon.name.slice(1);
-            const pokemonId = pokemon.id;
-            const pokemonTypes = pokemon.types.map( el => el.type.name);
-            const defaultImage = pokemon.sprites.front_default; 
+}
+
+let pokemonInfo = [];
+let iteration = 0;
+
+// Get Pokemon Data
+const fetchPokemonIndividualData = async (pokemons) => {
+    let url = pokemons.url;
+    return fetch(url) 
+    .then(response => response.json())
+    .then(pokeData => {
+        iteration++;
+        pokemonInfo.push(pokeData);
+        pokemonInfo.sort((a,b)=>{
+            return parseFloat(a.id) - parseFloat(b.id);
+        })
+        if(iteration === pokemonsNumber) {
+            iteration = 0;
+            showPokemon(pokemonInfo, pokemonsToShow, pokemonsOnScreen);
+        }
+    })
+}
+
+// Call fetch Pokemon function
+fetchPokemonsFromAPI();
+
+function showPokemon(pokemonInfo, pokemonsToShow, pokemonsOnScreen) {
+    for(let i = pokemonsOnScreen; i <= pokemonsToShow; i++){
+        if(i < pokemonsNumber){
+            const pokemonName = pokemonInfo[i].name[0].toUpperCase() + pokemonInfo[i].name.slice(1);
+            const pokemonId = pokemonInfo[i].id;
+            const pokemonTypes = pokemonInfo[i].types.map( el => el.type.name);
+            const defaultImage = pokemonInfo[i].sprites.front_default; 
             createPokemonCard(pokemonName, pokemonId, pokemonTypes, defaultImage);
             if(i == pokemonsToShow){
                 loadingScreen.style.display = "none";
@@ -103,16 +133,11 @@ const fecthAllPokemons = async (pokemonsToShow, pokemonsOnScreen) => {
         btn.addEventListener('click', e => {
             e.preventDefault();
             const pokemonId = e.target.parentNode.parentNode.getAttribute('data-id');
-            getPokemonInfo(pokemonId);
+            pokemonData(pokemonInfo, pokemonId);
             btn.classList.add('disableClick');
         });
     });
 }
-
-// Call the function to fetch all pokemons
-fecthAllPokemons(pokemonsToShow, pokemonsOnScreen);
-
-let visiblePokemons = 0;
 
 // Create pokemon cards
 function createPokemonCard(pokeName, pokeId, pokeType, defaultImage) {
@@ -132,7 +157,7 @@ function createPokemonCard(pokeName, pokeId, pokeType, defaultImage) {
 
     const pokeText = `
         <div class='image-container'>
-            <img src='//pokeres.bastionbot.org/images/pokemon/${pokeId}.png' onerror="this.src='${defaultImage}';"/>
+            <img src='//pokeres.bastionbot.org/images/pokemon/${pokeId}.png' onerror="this.src='${defaultImage}'"/>
         </div>
         <div class='info'>
             <span class='number'>#${pokeId.toString().padStart(3, '0')}</span>
@@ -143,7 +168,6 @@ function createPokemonCard(pokeName, pokeId, pokeType, defaultImage) {
 
     pokemonElement.innerHTML = pokeText;
     pokeContainer.appendChild(pokemonElement);
-    visiblePokemons++;
 }
 
 const overlay = document.querySelector('.overlay');
@@ -222,7 +246,8 @@ function pokemonCardInfo(pokemonName, pokemonId, pokemonTypes, pokemonAbilites, 
 }
 
 // Create pokemon card info
-function pokemonData(pokemon){
+function pokemonData(pokemonInfo, id){
+    let pokemon = pokemonInfo[id-1];
     const pokemonName = pokemon.name[0].toUpperCase() + pokemon.name.slice(1);
     const pokemonId = pokemon.id;
     const pokemonTypes = pokemon.types.map( el => el.type.name); 
@@ -233,15 +258,6 @@ function pokemonData(pokemon){
     const defaultImage = pokemon.sprites.front_default;
 
     pokemonCardInfo(pokemonName, pokemonId, pokemonTypes, pokemonAbilites, pokemonHeight, pokemonWeight, pokemonMoves, defaultImage);
-}
-
-// Get pokemon info to display on pokemon card
-getPokemonInfo = async (id) =>{
-    // Get pokemon info from API
-    const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
-    const result = await fetch(url);
-    const pokemon = await result.json();
-    pokemonData(pokemon);
 }
 
 // Close button
@@ -341,7 +357,7 @@ function filterType(buttonVal) {
         } else {
             // In the last iteration, if all pokemons are hidden, display message
             if (index === (array.length -1)) {
-                if(numberOfHiddenPokemons === pokemonsToShow){
+                if(numberOfHiddenPokemons > pokemonsToShow){
                     noPokemonContainer.classList.add("show");
                 } else {
                     noPokemonContainer.classList.remove("show");

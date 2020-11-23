@@ -444,7 +444,7 @@ button:hover {
     to { background: #e74c3c; }
 }
 @keyframes shake {
-    0 { transform: translate(0, 0) rotate(0); }
+    0% { transform: translate(0, 0) rotate(0); }
     20% { transform: translate(-10px, 0) rotate(-20deg); }
     30% { transform: translate(10px, 0) rotate(20deg); }
     50% { transform: translate(-10px, 0) rotate(-10deg); }
@@ -458,7 +458,7 @@ button:hover {
     100% { top: 0 }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 820px) {
     .top-container .search-pokemon {
         width: 90%;
     }
@@ -467,8 +467,47 @@ button:hover {
     }
 }
 
-@media (max-width: 320px) {
+@media (max-width: 480px) {
     #info-card {
         width: 280px;
+    }
+    .top-button {
+        position: relative;
+        width: 220px;
+        height: auto;
+        padding: 10px 0;
+        background: #fff;
+        color: #b71b1f;
+        border-radius: 10px;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        -ms-border-radius: 10px;
+        -o-border-radius: 10px;
+        bottom: 10px;
+        margin: 20px auto;
+        padding: 24px 0;
+        right: 0;
+        font-size: 18px;
+        line-height: 28px;
+    }
+
+    .top-button:after {
+        content: "Go to top";
+        visibility: visible;
+        display: block;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%);
+        color: #b71b1f;
+        margin: 0 auto;
+        top: 8px;
+        -webkit-transform: translate(-50%);
+        -moz-transform: translate(-50%);
+        -ms-transform: translate(-50%);
+        -o-transform: translate(-50%);
+}
+
+    .top-button .arrow {
+        display: none;
     }
 }
