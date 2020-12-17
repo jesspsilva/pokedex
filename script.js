@@ -77,7 +77,7 @@ const showHiddenPokemons = () => {
 
 // Get all pokemons from api
 const fetchPokemonsFromAPI = async () => {
-    const url = `//pokeapi.co/api/v2/pokemon/?limit=${pokemonsNumber}`;
+    const url = `https://pokeapi.co/api/v2/pokemon/?limit=${pokemonsNumber}`;
     return fetch(url)
     .then(response => response.json())
     .then(function(allpokemon){
@@ -157,7 +157,7 @@ function createPokemonCard(pokeName, pokeId, pokeType, defaultImage) {
 
     const pokeText = `
         <div class='image-container'>
-            <img src='//pokeres.bastionbot.org/images/pokemon/${pokeId}.png' onerror="this.src='${defaultImage}'"/>
+            <img src='https://pokeres.bastionbot.org/images/pokemon/${pokeId}.png' onerror="this.src='${defaultImage}'"/>
         </div>
         <div class='info'>
             <span class='number'>#${pokeId.toString().padStart(3, '0')}</span>
