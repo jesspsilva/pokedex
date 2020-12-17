@@ -94,6 +94,7 @@ let iteration = 0;
 // Get Pokemon Data
 const fetchPokemonIndividualData = async (pokemons) => {
     let url = pokemons.url;
+    url = url.slice(0, url.lastIndexOf('/'));
     return fetch(url) 
     .then(response => response.json())
     .then(pokeData => {
